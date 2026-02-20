@@ -1,68 +1,49 @@
 import re
 
-def analyze_text(content: str):
+SUSPICIOUS_KEYWORDS = [
+    "login", "verify", "secure", "update",
+    "support", "account", "bank", "paypal"
+]
+
+BRAND_PATTERNS = [
+    "google", "facebook", "paypal", "amazon"
+]
+
+def analyze_url(content: str):
+    url = content.lower()
     score = 0
     indicators = []
 
-    urgency_keywords = ["urgent", "act now", "limited time", "immediately"]
-    reward_keywords = ["you won", "congratulations", "free money", "claim now"]
-    financial_keywords = ["bank", "credit card", "payment", "crypto", "loan"]
-    impersonation_keywords = ["hr department", "placement cell", "official notice"]
+    # 1️⃣ Suspicious keywords
+    for word in SUSPICIOUS_KEYWORDS:
+        if word in url:
+            score += 2
+            indicators.append(f"Contains suspicious keyword: {word}")
 
-    suspicious_domains = ["bit.ly", "tinyurl", "goo.gl", "t.co"]
+    # 2️⃣ Brand impersonation
+    for brand in BRAND_PATTERNS:
+        if brand in url:
+            # If brand + hyphen = suspicious
+            if "-" in url:
+                score += 3
+                indicators.append(f"Possible brand impersonation: {brand}")
 
-    content_lower = content.lower()
+    # 3️⃣ Numbers replacing letters (simple detection)
+    if re.search(r"[0-9]", url):
+        score += 1
+        indicators.append("Contains numeric characters")
 
-    # Urgency Detection
-    for word in urgency_keywords:
-        if word in content_lower:
-            score += 15
-            indicators.append(f"Urgency phrase detected: '{word}'")
-
-    # Reward Detection
-    for word in reward_keywords:
-        if word in content_lower:
-            score += 20
-            indicators.append(f"Reward bait detected: '{word}'")
-
-    # Financial Detection
-    for word in financial_keywords:
-        if word in content_lower:
-            score += 10
-            indicators.append(f"Financial keyword detected: '{word}'")
-
-    # Impersonation Detection
-    for word in impersonation_keywords:
-        if word in content_lower:
-            score += 15
-            indicators.append(f"Impersonation indicator detected: '{word}'")
-
-    # URL Detection
-    urls = re.findall(r'(https?://\S+)', content)
-    for url in urls:
-        for domain in suspicious_domains:
-            if domain in url:
-                score += 20
-                indicators.append(f"Suspicious shortened URL detected: '{url}'")
-
-    # Excessive Capital Letters
-    if content.isupper():
-        score += 10
-        indicators.append("Message contains excessive capital letters")
-
-    # Risk Level Determination
-    if score < 30:
-        level = "Low"
-    elif score < 60:
+    # Risk levels
+    if score >= 5:
+        level = "High"
+    elif score >= 3:
         level = "Medium"
     else:
-        level = "High"
-
-    advice = "Avoid clicking unknown links and verify directly from official sources."
+        level = "Low"
 
     return {
-        "risk_score": min(score, 100),
+        "risk_score": score,
         "risk_level": level,
         "indicators": indicators,
-        "advice": advice
-    }
+        "advice": "Avoid clicking unknown links and verify directly from official sources."
+}
