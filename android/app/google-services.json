@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807348580980",
+    "project_id": "phishcatch-8c994",
+    "storage_bucket": "phishcatch-8c994.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807348580980:android:628575ea0f5a1a84d2d721",
+        "android_client_info": {
+          "package_name": "com.example.phishcatch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGejpfdvzZ7MecFuhAsO9gn4oAfgJCpps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
